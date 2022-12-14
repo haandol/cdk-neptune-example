@@ -52,6 +52,9 @@ export class NeptuneClusterStack extends cdk.Stack {
     const smRole = new iam.Role(this, 'SagemakerRole', {
       roleName: `AWSNeptuneNotebookRole${ns}`,
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'),
+      ],
     });
     new sm.CfnNotebookInstance(this, 'NotebookInstance', {
       notebookInstanceName: `aws-neptune-${ns.toLowerCase()}`,
