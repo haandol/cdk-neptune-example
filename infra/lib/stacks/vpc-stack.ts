@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface IProps extends StackProps {
-  vpcId: string;
+  vpcId?: string;
 }
 
 export class VpcStack extends Stack {
@@ -12,6 +12,13 @@ export class VpcStack extends Stack {
   constructor(scope: Construct, id: string, props: IProps) {
     super(scope, id, props);
 
-    this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', { vpcId: props.vpcId });
+    if (props.vpcId) {
+      this.vpc = ec2.Vpc.fromLookup(this, 'ImportedVpc', {
+        vpcId: props.vpcId,
+      });
+    } else {
+      // new vpc
+      this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3 });
+    }
   }
 }

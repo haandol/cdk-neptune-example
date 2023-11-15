@@ -1,0 +1,9 @@
+[app]
+ns="NeptuneDemo"
+stage="Dev"
+
+[aws]
+region="ap-northeast-2"
+
+# [vpc]
+# id=""

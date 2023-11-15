@@ -3,35 +3,26 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { NeptuneClusterStack } from '../lib/stacks/neptune-stack';
 import { VpcStack } from '../lib/stacks/vpc-stack';
-import { Config } from '../lib/configs/loader';
+import { Config } from '../config/loader';
 
 const app = new cdk.App({
   context: {
-    ns: Config.Ns,
+    ns: Config.app.ns,
+    stage: Config.app.stage,
   },
 });
 
-const vpcStack = new VpcStack(app, `${Config.Ns}VpcStack`, {
-  vpcId: Config.VpcId,
-  env: {
-    account: Config.AWS.Account,
-    region: Config.AWS.Region,
-  },
+const vpcStack = new VpcStack(app, `${Config.app.ns}VpcStack`, {
+  vpcId: Config.vpc?.id,
 });
 
 const clusterStack = new NeptuneClusterStack(
   app,
-  `${Config.Ns}NeptuneClusterStack`,
-  {
-    vpc: vpcStack.vpc,
-    env: {
-      account: Config.AWS.Account,
-      region: Config.AWS.Region,
-    },
-  }
+  `${Config.app.ns}NeptuneClusterStack`,
+  { vpc: vpcStack.vpc }
 );
 clusterStack.addDependency(vpcStack);
 
 const tags = cdk.Tags.of(app);
-tags.add('namespace', Config.Ns);
-tags.add('stage', Config.Stage);
+tags.add('namespace', Config.app.ns);
+tags.add('stage', Config.app.stage);
